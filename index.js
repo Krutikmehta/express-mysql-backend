@@ -21,5 +21,5 @@ app.listen(PORT, () => {
 //     linkedId INT,
 //     linkPrecedence ENUM('primary','secondary') NOT NULL,
 //     createdAt datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-//     updatedAt datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+//     updatedAt datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 //     deletedAt datetime)
