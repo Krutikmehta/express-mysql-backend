@@ -6,6 +6,13 @@ const pool = mysql.createPool({
   database: process.env.DB_DBNAME,
 });
 
+// const pool = mysql.createPool({
+//   host: "localhost",
+//   user: "root",
+//   password: "I@mbatman8",
+//   database: "bitespeed",
+// });
+
 pool.getConnection((err, conn) => {
   if (err) console.log(err);
   else console.log("connected succesfully");
