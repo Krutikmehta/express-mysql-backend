@@ -1,61 +1,11 @@
 const pool = require("../database/index");
-const { link } = require("../routes/identity.router");
-
-const insertAsSecondary = async ({ phoneNumber, email, linkedId }) => {
-  const [row, field] = await pool.query(
-    "insert into contact (phoneNumber,email,linkPrecedence,linkedId) values (?,?,?,?)",
-    [phoneNumber, email, "secondary", linkedId]
-  );
-  console.log("hiehihrie");
-};
-
-const insertAsPrimary = async ({ phoneNumber, email }) => {
-  const [row, field] = await pool.query(
-    "insert into contact (phoneNumber,email,linkPrecedence) values (?,?,?)",
-    [phoneNumber, email, "primary"]
-  );
-  return [row, field];
-};
-
-const getPrimaryId = (item) => {
-  console.log(item);
-  if (item.linkPrecedence === "primary") return item.id;
-  return item.linkedId;
-};
-const updateLinkPrecedence = async ({ linkedId, id }) => {
-  console.log(id, linkedId);
-  const [row, field] = await pool.query(
-    "update contact set linkedId=?, linkPrecedence=? where id=?",
-    [linkedId, "secondary", id]
-  );
-};
-
-const getResponse = async (primaryId) => {
-  console.log("getresp", primaryId);
-  const contact = {
-    primaryContatctId: primaryId,
-    emails: [],
-    phoneNumbers: [],
-    secondaryContactIds: [],
-  };
-
-  const [row, field] = await pool.query(
-    "select email, phoneNumber,id from contact where linkedId = ? or id = ?",
-    [primaryId, primaryId]
-  );
-  row.forEach((item) => {
-    if (item.id === primaryId) {
-      contact.emails.unshift(item.email);
-      contact.phoneNumbers.unshift(item.phoneNumber);
-      return;
-    }
-    contact.emails.push(item.email);
-    contact.phoneNumbers.push(item.phoneNumber);
-    contact.secondaryContactIds.push(item.id);
-  });
-
-  return contact;
-};
+const {
+  insertAsPrimary,
+  insertAsSecondary,
+  getResponse,
+  getPrimaryId,
+  updateLinkPrecedence,
+} = require("./helper");
 
 const identityController = {
   post: async (req, res) => {
@@ -94,15 +44,15 @@ const identityController = {
 
         let primaryId = -1;
         if (matchedWithBoth) {
-          primaryId = getPrimaryId(matchedWithBothObj);
+          primaryId = getPrimarrId(matchedWithBothObj);
         } else {
           const sizePN = matchedWithPhoneNumber.length;
           const sizeEM = matchedWithEmail.length;
           if (sizePN === 0 && sizeEM !== 0) {
             // matched with email, insert as secondary
+
             const linkedId = matchedWithEmail[0].id;
             primaryId = getPrimaryId(matchedWithEmail[0]);
-            console.log("pid", primaryId);
             await insertAsSecondary({ phoneNumber, email, linkedId });
           } else if (sizePN !== 0 && sizeEM === 0) {
             // matched with phone number, insert as primary
@@ -141,6 +91,9 @@ const identityController = {
         return;
       }
     } catch (error) {
+      res.json(500, {
+        error: "Error",
+      });
       console.log(error);
     }
   },
