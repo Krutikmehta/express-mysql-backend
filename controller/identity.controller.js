@@ -8,6 +8,9 @@ const {
 } = require("./helper");
 
 const identityController = {
+  get: (req, res) => {
+    res.json({ message: "make a post request to the same endpoint" });
+  },
   post: async (req, res) => {
     try {
       const { phoneNumber, email } = req.body;
