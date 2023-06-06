@@ -14,6 +14,17 @@ const identityController = {
   post: async (req, res) => {
     try {
       const { phoneNumber, email } = req.body;
+      if (!phoneNumber && !email) {
+        res.json({
+          contact: {
+            primaryContatctId: null,
+            emails: [],
+            phoneNumbers: [],
+            secondaryContactIds: [],
+          },
+        });
+        return;
+      }
       const [row, field] = await pool.query(
         "select * from contact where email=? or phoneNumber=? order by createdAt asc",
         [email, phoneNumber]
