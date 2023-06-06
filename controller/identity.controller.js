@@ -44,7 +44,7 @@ const identityController = {
 
         let primaryId = -1;
         if (matchedWithBoth) {
-          primaryId = getPrimarrId(matchedWithBothObj);
+          primaryId = getPrimaryId(matchedWithBothObj);
         } else {
           const sizePN = matchedWithPhoneNumber.length;
           const sizeEM = matchedWithEmail.length;
